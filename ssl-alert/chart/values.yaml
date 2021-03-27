@@ -1,0 +1,61 @@
+# Default values for ssl-slert.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: registry.baidubce.com/tools/ssl-alert
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: latest
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 100Mi
+  requests:
+    cpu: 50m
+    memory: 50Mi
+
+###########################################################
+#dingtalk_token的获取方式是钉钉群机器人的webhook地址经过base64加密,上述地址需要更换为实际使用地址
+#dingtalk_token加密方式: echo "https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxxxxxxxxxxxxxxxx"|base64 -w 0
+#dingtalk_token解密方式: echo "aHR0cHM6Ly9vYXBpLmRpbmd0YWxrLmNvbS9xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|"|base64 -d
+###########################################################
+secret:
+  secret_name: ssl-alert-secret
+  dingtalk_token: aHR0cHM6Ly9vYXBpLmRpxxxxxxxxxxxxxxxxxxxxx
+  env:
+    - name: dingtalk_token
+      valueFrom:
+        secretKeyRef:
+          name: ssl-alert-secret
+          key: dingtalk_token
+
+volumeMounts:
+  - name: ssl-alert-hosts
+    mountPath: /opt/hosts
+    subPath: path/to/hosts
+  - name: ssl-alert-cron
+    mountPath: /etc/cron.d/ssl-alert-cron
+    subPath: path/to/ssl-alert-cron
+
+volumes:
+  - name: ssl-alert-hosts
+    configMap:
+      name: ssl-alert-configmap
+      items:
+        - key: hosts
+          path: path/to/hosts
+  - name: ssl-alert-cron
+    configMap:
+      name: ssl-alert-configmap
+      items:
+        - key: ssl-alert-cron
+          path: path/to/ssl-alert-cron
+
+#dependencies: true && false
+reloader:
+  enabled: false
+

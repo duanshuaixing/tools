@@ -1,0 +1,79 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ssl-alert-secret
+  annotations:
+    reloader.stakater.com/auto: "true"
+data:
+  dingtalk_token: aHR0cHM6Ly9vYXBpLmRpbmd0YWxrLmNvbS
+#dingtalk_token的获取方式是钉钉群机器人的webhook地址经过base64加密,上述地址需要更换为实际使用地址
+#dingtalk_token加密方式: echo "https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxxxxxxxxxxxxxxxx"|base64 -w 0
+#dingtalk_token解密方式: echo "aHR0cHM6Ly9vYXBpLmRpbmd0YWxrLmNvbS9xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|"|base64 -d
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ssl-alert-configmap
+data:
+  hosts: |
+    www.baidu.com:443
+    www.aliyun.com:443
+    192.168.86.22:6443
+  ssl-alert-cron: |
+    30 10 * * * for i in `cat /opt/hosts`; do bash /opt/ssl-alert.sh $i; done
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ssl-alert
+  name: ssl-alert
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ssl-alert
+  template:
+    metadata:
+      labels:
+        app: ssl-alert
+    spec:
+      containers:
+      - image: registry.baidubce.com/tools/ssl-alert:latest
+        imagePullPolicy: Always
+        name: ssl-alert
+        env:
+          - name: dingtalk_token
+            valueFrom:
+              secretKeyRef:
+                name: ssl-alert-secret
+                key: dingtalk_token
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 50m
+            memory: 50Mi
+        volumeMounts:
+          - name: ssl-alert-hosts
+            mountPath: /opt/hosts
+            subPath: path/to/hosts
+          - name: ssl-alert-cron
+            mountPath: /etc/cron.d/ssl-alert-cron
+            subPath: path/to/ssl-alert-cron
+
+      volumes:
+        - name: ssl-alert-hosts
+          configMap:
+            name: ssl-alert-configmap
+            items:
+              - key: hosts
+                path: path/to/hosts
+        - name: ssl-alert-cron
+          configMap:
+            name: ssl-alert-configmap
+            items:
+              - key: ssl-alert-cron
+                path: path/to/ssl-alert-cron
