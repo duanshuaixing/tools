@@ -3,17 +3,17 @@ entries:
   ssl-alert:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2021-03-28T05:23:40.033139261+08:00"
+    created: "2021-03-28T06:14:31.570440142+08:00"
     dependencies:
     - condition: reloader.enabled
       name: reloader
       repository: file://../reloader/
       version: v0.0.77
-    description: Check the domain name certificate or k8s certificate expiration time, and use dingtalk notification
-    digest: f6c20d1a2730b94c7d95cf5e4b8abc92da607c3defcffd6882ae2dae99945b4f
+    description: Tools for checking certificate expiration time
+    digest: aea8aef19ecd82af7a1de75eb3f169ab54e8b16fa51b75ce00451c7b19edad9f
     name: ssl-alert
     type: application
     urls:
-    - https://duanshuaixing.github.io/tools/charts/ssl-alert-0.1.0.tgz
+    - https://duanshuaixing.github.io/tools/ssl-alert-0.1.0.tgz
     version: 0.1.0
-generated: "2021-03-28T05:23:40.031313425+08:00"
+generated: "2021-03-28T06:14:31.568712435+08:00"
