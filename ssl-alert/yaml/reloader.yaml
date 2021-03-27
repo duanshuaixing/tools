@@ -113,7 +113,7 @@ spec:
         
     spec:
       containers:
-      - image: "stakater/reloader:v0.0.77"
+      - image: "registry.baidubce.com/docker-hub/stakater/reloader:v0.0.77"
         imagePullPolicy: IfNotPresent
         name: reloader-reloader
 
