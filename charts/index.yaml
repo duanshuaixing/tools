@@ -9,7 +9,7 @@ entries:
       name: reloader
       repository: file://../reloader/
       version: v0.0.77
-    description: A Helm chart for Kubernetes
+    description: Check the domain name certificate or k8s certificate expiration time, and use dingtalk notification
     digest: f6c20d1a2730b94c7d95cf5e4b8abc92da607c3defcffd6882ae2dae99945b4f
     name: ssl-alert
     type: application

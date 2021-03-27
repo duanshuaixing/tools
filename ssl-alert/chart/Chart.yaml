@@ -1,6 +1,6 @@
 apiVersion: v2
 name: ssl-alert
-description: A Helm chart for Kubernetes
+description: Tools for checking certificate expiration time
 
 # A chart can be either an 'application' or a 'library' chart.
 #
