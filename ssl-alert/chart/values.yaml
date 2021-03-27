@@ -25,7 +25,7 @@ resources:
 ###########################################################
 secret:
   secret_name: ssl-alert-secret
-  dingtalk_token: aHR0cHM6Ly9vYXBpLmRpxxxxxxxxxxxxxxxxxxxxx
+  dingtalk_token: "Please use the base64 encoded string of dingtalk webhook"
   env:
     - name: dingtalk_token
       valueFrom:
