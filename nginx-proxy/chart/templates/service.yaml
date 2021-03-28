@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nginx-proxy.fullname" . }}
+  labels:
+    {{- include "nginx-proxy.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.service.http.port }}
+      targetPort: {{ .Values.service.http.targetPort }}
+      nodePort: {{ .Values.service.http.nodePort }}
+    - name: https
+      protocol: TCP
+      port: {{ .Values.service.https.port }}
+      targetPort: {{ .Values.service.https.targetPort }}
+      nodePort: {{ .Values.service.https.nodePort }}
+
+  selector:
+    {{- include "nginx-proxy.selectorLabels" . | nindent 4 }}
