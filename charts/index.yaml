@@ -1,9 +1,20 @@
 apiVersion: v1
 entries:
+  nginx-proxy:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-03-28T22:50:29.189221874+08:00"
+    description: nginx proxy access to the Internet
+    digest: df419e135a3f60905f291d510d734e32856e4a4a878cfe9f568f8cc1e858a80a
+    name: nginx-proxy
+    type: application
+    urls:
+    - https://duanshuaixing.github.io/tools/nginx-proxy-0.1.0.tgz
+    version: 0.1.0
   ssl-alert:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2021-03-28T06:14:31.570440142+08:00"
+    created: "2021-03-28T22:50:29.192801151+08:00"
     dependencies:
     - condition: reloader.enabled
       name: reloader
@@ -16,4 +27,4 @@ entries:
     urls:
     - https://duanshuaixing.github.io/tools/ssl-alert-0.1.0.tgz
     version: 0.1.0
-generated: "2021-03-28T06:14:31.568712435+08:00"
+generated: "2021-03-28T22:50:29.188088913+08:00"
