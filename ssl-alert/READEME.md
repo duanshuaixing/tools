@@ -60,23 +60,71 @@
    #修改dingtalk_token的值，值是钉钉webhook经过base64编码后的字符串
    kubectl apply -f ssl-alert-k8s.yaml
    ```
+   
 
 #### 三、通过helm3部署
 
-1. ##### 添加repo仓库
+1. ##### 克隆helm chart
 
    ```
-   helm repo add github https://duanshuaixing.github.io/tools/charts/
-   helm repo update
+   git clone https://github.com/duanshuaixing/tools.git
    ```
 
 2. ##### 部署通过helm部署ssl-alert
 
    ```
-   helm install ssl-alert github/ssl-alert --set reloader.enabled=false --set secret.dingtalk_token="Please use the base64 encoded string of dingtalk webhook"
+   helm install ssl-alert . --set reloader.enabled=true --set secret.dingtalk_token="Please use the base64 encoded string of dingtalk webhook"
    ```
 
-#### 四、卸载ssl-alert
+#### 四、更新监控主机、告警时间、webhook、开启或者关闭reloader
+
+1. ##### 更新监控主机、告警时间
+
+   ```
+   导出ssl-alert-configmap到yaml文件
+   kubectl  get cm |grep ssl-alert|awk '{print $1}'|xargs kubectl get cm -o yaml >> ssl-alert-configmap.yaml
+   
+   修改ssl-alert-configmap.yaml后apply这个yaml
+   kubectl apply -f ssl-alert-configmap.yaml
+   
+   重启pod(开启reloader配置后不需要手动重启pod)
+   kubectl get pod|grep ssl-alert|awk '{print $1}'|xargs kubectl delete pod
+   ```
+
+2. ##### 修改告警webhook
+   ###### 1>通过secret修改
+
+   ```	
+   kubectl get secrets |grep ssl-alert|grep Opaque|awk '{print $1}'|xargs kubectl get secrets -o yaml >>ssl-alert.yaml
+   
+   重启pod(开启reloader配置后不需要手动重启pod)
+   kubectl get pod|grep ssl-alert|awk '{print $1}'|xargs kubectl delete pod
+   ```
+
+   ###### 2> 通过helm更新
+
+   ```
+   helm upgrade ssl-alert github/ssl-alert --set reloader.enabled=false --set secret.dingtalk_token=新的webhook地址base64转码后的字符串
+   
+   重启pod(开启reloader配置后不需要手动重启pod)
+   kubectl get pod|grep ssl-alert|awk '{print $1}'|xargs kubectl delete pod
+   ```
+
+3. ##### 开启和关闭reloader
+
+   ###### 1>开启reloader
+
+   ```
+   helm upgrade ssl-alert github/ssl-alert --set reloader.enabled=true
+   ```
+
+   ###### 2>关闭reloader
+
+   ```
+   helm upgrade ssl-alert github/ssl-alert --set reloader.enabled=false
+   ```
+
+#### 五、卸载ssl-alert
 
 1. ##### 卸载通过docker方式部署的ssl-alert
 
