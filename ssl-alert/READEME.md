@@ -64,16 +64,17 @@
 
 #### 三、通过helm3部署
 
-1. ##### 克隆helm chart
+1. ##### 添加repo
 
    ```
-   git clone https://github.com/duanshuaixing/tools.git
+   helm repo add github https://duanshuaixing.github.io/tools/charts/
+   helm repo update
    ```
 
 2. ##### 部署通过helm部署ssl-alert
 
    ```
-   helm install ssl-alert . --set reloader.enabled=true --set secret.dingtalk_token="Please use the base64 encoded string of dingtalk webhook"
+   helm install ssl-alert github/ssl-alert --set reloader.enabled=false --set secret.dingtalk_token="Please use the base64 encoded string of dingtalk webhook"
    ```
 
 #### 四、更新监控主机、告警时间、webhook、开启或者关闭reloader
