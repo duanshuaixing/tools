@@ -12,8 +12,6 @@ DOCKER_REPOSITORY="registry.baidubce.com"
 IMAGE_NAME="${DOCKER_REPOSITORY}/${PROJECT}/${IMAGE}"
 TIMESTAMP=$(date +"%Y%m%dT%H%M%S")
 
-BUILD_ARGS+=" --build-arg PKG_VERSION=${VERSION}"
-
 if [ $HTTP_PROXY ]; then
     BUILD_ARGS+=" --build-arg HTTP_PROXY=${HTTP_PROXY}"
 fi
