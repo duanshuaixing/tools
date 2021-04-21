@@ -1,0 +1,65 @@
+version: '2'
+services:
+  zoo1:
+    image: registry.baidubce.com/docker-hub/wurstmeister/zookeeper:latest
+    restart: unless-stopped
+    hostname: zoo1
+    ports:
+      - "2181:2181"
+    container_name: zookeeper
+  kafka1:
+    image: registry.baidubce.com/docker-hub/wurstmeister/kafka:2.13-2.7.0
+    ports:
+      - "9091:9092"
+    volumes:
+      - /data/kafka1/:/kafka/
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.86.88                                  ## 修改:宿主机IP
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.86.88:9091                 ## 修改:宿主机IP
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
+      KAFKA_ADVERTISED_PORT: 9091
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zoo1
+    container_name: kafka1
+  kafka2:
+    image: registry.baidubce.com/docker-hub/wurstmeister/kafka:2.13-2.7.0
+    ports:
+      - "9092:9092"
+    volumes:
+      - /data/kafka2/:/kafka/
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.86.88                                  ## 修改:宿主机IP
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.86.88:9092                 ## 修改:宿主机IP
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_BROKER_ID: 2
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zoo1
+    container_name: kafka2
+  kafka3:
+    image: registry.baidubce.com/docker-hub/wurstmeister/kafka:2.13-2.7.0
+    ports:
+      - "9093:9092"
+    volumes:
+      - /data/kafka3/:/kafka/
+    environment:
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.86.88                                  ## 修改:宿主机IP
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.86.88:9093                 ## 修改:宿主机IP
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
+      KAFKA_ADVERTISED_PORT: 9093
+      KAFKA_BROKER_ID: 3
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zoo1
+    container_name: kafka3
+  kafka-manager:
+    image: registry.baidubce.com/docker-hub/sheepkiller/kafka-manager:latest      ## 镜像：开源的web管理kafka集群的界面
+    environment:
+        ZK_HOSTS: 192.168.86.88                   ## 修改:宿主机IP
+    ports:
+      - "9000:9000"                               ## 暴露端口
+    container_name: kafka-manager
