@@ -5,11 +5,9 @@ metadata:
   name: ssl-alert-secret
   annotations:
     reloader.stakater.com/auto: "true"
-data:
-  dingtalk_token: "Please use the base64 encoded string of dingtalk webhook"
-#dingtalk_token的获取方式是钉钉群机器人的webhook地址经过base64加密,上述地址需要更换为实际使用地址
-#dingtalk_token加密方式: echo "https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxxxxxxxxxxxxxxxx"|base64 -w 0
-#dingtalk_token解密方式: echo "aHR0cHM6Ly9vYXBpLmRpbmd0YWxrLmNvbS9xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|"|base64 -d
+stringData:
+  dingtalk_token: https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxxxxxxxxxxxxxxxx
+#dingtalk_token的获取方式是钉钉群机器人的webhook地址, 机器人的关键词是证书
 ---
 apiVersion: v1
 kind: ConfigMap
