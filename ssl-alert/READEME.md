@@ -10,7 +10,7 @@
 
 - 可以通过修改configmap修改告警时间
 
-- yaml部署和helm部署钉钉webhook地址需要经过base64编码
+- yaml部署和helm部署需要填写钉钉webhook地址
 
 - yaml部署需要开启reloader滚动更新功能，需要单独部署reloader服务，
 
@@ -53,7 +53,7 @@
    kubectl apply -f https://raw.githubusercontent.com/duanshuaixing/tools/master/ssl-alert/yaml/reloader.yaml 
    ```
 
-2. ##### 部署ssl-alert服务，下载yaml并修改钉钉webhook经过base64编码后的值
+2. ##### 部署ssl-alert服务，下载yaml并修改钉钉webhook的值
 
    ```
    wget https://raw.githubusercontent.com/duanshuaixing/tools/master/ssl-alert/yaml/ssl-alert-k8s.yaml
@@ -74,7 +74,7 @@
 2. ##### 部署通过helm部署ssl-alert
 
    ```
-   helm install ssl-alert github/ssl-alert --set reloader.enabled=false --set secret.dingtalk_token="Please use the base64 encoded string of dingtalk webhook"
+   helm install ssl-alert github/ssl-alert --set reloader.enabled=false --set secret.dingtalk_token="Please use the dingtalk webhook"
    ```
 
 #### 四、更新监控主机、告警时间、webhook、开启或者关闭reloader
@@ -105,7 +105,7 @@
    ###### 2> 通过helm更新
 
    ```
-   helm upgrade ssl-alert github/ssl-alert --set reloader.enabled=false --set secret.dingtalk_token=新的webhook地址base64转码后的字符串
+   helm upgrade ssl-alert github/ssl-alert --set reloader.enabled=false --set secret.dingtalk_token=新的webhook地址字符串
    
    重启pod(开启reloader配置后不需要手动重启pod)
    kubectl get pod|grep ssl-alert|awk '{print $1}'|xargs kubectl delete pod
