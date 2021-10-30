@@ -44,11 +44,14 @@ data:
         
             if [ $? -eq 0 ];then
                context="集群访问正常:$Cluster_name\n\n检测时间: $Check_time"
+               echo "##########################################################"
                echo $context
-               send_message
+               echo "##########################################################"
             else
                context="[关键通知]\n\n集群卡主: $Cluster_name\n\n集群地址: \n\n$Cluster_members\n\n检测时间: $Check_time"
+               echo "##########################################################"
                echo $context
+               echo "##########################################################"
                send_message
             fi
         }
