@@ -1,0 +1,17 @@
+<<!
+ **********************************************************
+ * Author        : duanshuaixing
+ * Email         : duanshuaixing@gmail.com
+ * Last modified : 2021-10-30 12:01
+ * Filename      : READEME
+ * Description   : 
+ * *******************************************************
+!
+
+镜像地址: registry.baidubce.com/tools/databases-backup:v001
+
+支持mongo、mongo-shake、mysql、pgsql等备份工具、同时也支持aws-cli、s3cmd、rbd等存储客户端命令
+
+基于databases-backup:v001镜像实现的功能:
+
+1、文件:mongodb-check-status.yaml 检查mongodb集群是否卡主，将来会支持更多指标检测

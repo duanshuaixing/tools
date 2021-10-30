@@ -1,0 +1,102 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: check-mongodb-status
+data:
+  mongodb-check-status.sh: |
+    <<!
+     **********************************************************
+     * Author        : duanshuaixing
+     * Email         : duanshuaixing@gmail.com
+     * Last modified : 2021-10-30 20:48
+     * Filename      : check-status.sh
+     * Description   : 检查mongodb集群是否卡主 
+     * *******************************************************
+    !
+    #!/bin/bash
+    
+    DINGTALK_TOKEN=https://oapi.dingtalk.com/robot/send?access_token=钉钉群机器人(关键词:集群)
+    Check_time=`date +%Y/%m/%d-%T`
+    HTTP_PROXY_ENABLED=false（设置为true时需要和HTTP_PROXY一起用）
+    HTTP_PROXY=http_proxy:port(根据实际代理地址填写,用于发送钉钉告警)
+    
+    send_message(){
+    
+         if [ "$HTTP_PROXY_ENABLED" = true ];then
+             curl --proxy $HTTP_PROXY "$DINGTALK_TOKEN" -H 'Content-Type: application/json' -d "{\"actionCard\": {\"text\": \"$context\",},\"msgtype\": \"actionCard\"}"
+         else
+             curl "$DINGTALK_TOKEN" -H 'Content-Type: application/json' -d "{\"actionCard\": {\"text\": \"$context\",},\"msgtype\": \"actionCard\"}"
+        fi
+    }
+    
+    cluster01(){
+    
+        Cluster_name=k8s-mongodb
+        Cluster_replSetName=rs0
+        Cluster_members=192.168.86.xxx:27017,192.168.86.xxx:27017,192.168.86.xxx:27017
+        Cluster_admin_user=<admin-user>
+        Cluster_admin_password=<admin-password>
+    
+        check_hang(){
+       
+            timeout -k 5s 15s  mongo admin --host $Cluster_replSetName/$Cluster_members -u $Cluster_admin_user -p $Cluster_admin_password --authenticationDatabase "admin" --eval 'db.system.version.find()'
+        
+            if [ $? -eq 0 ];then
+               context="集群访问正常:$Cluster_name\n\n检测时间: $Check_time"
+               echo $context
+               send_message
+            else
+               context="[关键通知]\n\n集群卡主: $Cluster_name\n\n集群地址: \n\n$Cluster_members\n\n检测时间: $Check_time"
+               echo $context
+               send_message
+            fi
+        }
+     
+        check_hang
+    
+    }
+    
+    check_status(){
+    
+        cluster01
+    }
+    
+    check_status
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: mongodb-check-status
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+            - name: scripts
+              configMap:
+                name: check-mongodb-status
+                defaultMode: 0777
+          containers:
+            - name: check
+              image: registry.baidubce.com/tools/databases-backup:v001
+              env:
+                - name: TZ
+                  value: Asia/Shanghai
+              command: ["/bin/bash", "-c", "/tmp/mongodb-check-status.sh"]
+              resources:
+                limits:
+                cpu: "100m"
+                memory: "200Mi"
+              requests:
+                cpu: "50m"
+                memory: "100Mi"
+              securityContext:
+                runAsUser: 0
+              volumeMounts:
+                - name: scripts
+                  mountPath: /tmp/mongodb-check-status.sh
+                  subPath: mongodb-check-status.sh
