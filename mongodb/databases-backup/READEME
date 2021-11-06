@@ -10,8 +10,12 @@
 
 镜像地址: registry.baidubce.com/tools/databases-backup:v001
 
-支持mongo、mongo-shake、mysql、pgsql等备份工具、同时也支持aws-cli、s3cmd、rbd等存储客户端命令
+支持工具列表:
+数据库方面: mongo、mongo-shake、mysql、pgsql、etcdctl等备份工具
+数据库压测: ycsb(mongodb压测工具)
+存储方面: aws-cli、s3cmd、rbd、s3fs等存储客户端命令
 
-基于databases-backup:v001镜像实现的功能:
+
+基于databases-backup:v002镜像实现的功能:
 
 1、文件:mongodb-check-status.yaml 检查mongodb集群是否卡主，将来会支持更多指标检测

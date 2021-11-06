@@ -35,7 +35,7 @@ EOF
     yum makecache
     yum -y install epel-release
     yum -y update
-    yum -y install wget lrzsz openssl crontabs
+    yum -y install wget lrzsz openssl crontabs jq s3fs-fuse
 
 }
 
@@ -61,6 +61,11 @@ install_sf(){
     wget https://github.com/alibaba/MongoShake/releases/download/release-v2.6.4-20210414/mongo-shake-v2.6.4_2.tar.gz -P /opt/
     tar -xf /opt/mongo-shake-v2.6.4_2.tar.gz -C /opt/
     rm -rf /opt/mongo-shake-v2.6.4_2.tar.gz
+
+    # install ysbc https://github.com/brianfrankcooper/YCSB/
+    curl -O --location https://github.com/brianfrankcooper/YCSB/releases/download/0.17.0/ycsb-0.17.0.tar.gz
+    tar -xf ycsb-0.17.0.tar.gz -C /opt/
+    rm -rf ycsb-0.17.0.tar.gz
 
     # install etcdctl client
     curl -LO https://github.com/coreos/etcd/releases/download/v3.4.13/etcd-v3.4.13-linux-amd64.tar.gz

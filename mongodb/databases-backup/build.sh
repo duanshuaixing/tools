@@ -7,7 +7,7 @@ cd ${DOCKER_BUILD_DIR}
 registry.baidubce.com/tools/databases-backup:v001
 
 BUILD_ARGS="--no-cache"
-VERSION="v001"
+VERSION="v002"
 PROJECT="tools"
 IMAGE="databases-backup"
 DOCKER_REPOSITORY="registry.baidubce.com"
