@@ -63,9 +63,10 @@ install_sf(){
     rm -rf /opt/mongo-shake-v2.6.4_2.tar.gz
 
     # install ysbc https://github.com/brianfrankcooper/YCSB/
-    curl -O --location https://github.com/brianfrankcooper/YCSB/releases/download/0.17.0/ycsb-0.17.0.tar.gz
-    tar -xf ycsb-0.17.0.tar.gz -C /opt/
-    rm -rf ycsb-0.17.0.tar.gz
+    yum -y install java-devel
+    wget https://github.com/brianfrankcooper/YCSB/releases/download/0.17.0/ycsb-mongodb-binding-0.17.0.tar.gz
+    tar -xf ycsb-mongodb-binding-0.17.0.tar.gz -C /opt/
+    rm -rf ycsb-mongodb-binding-0.17.0.tar.gz
 
     # install etcdctl client
     curl -LO https://github.com/coreos/etcd/releases/download/v3.4.13/etcd-v3.4.13-linux-amd64.tar.gz
