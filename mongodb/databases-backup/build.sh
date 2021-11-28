@@ -4,8 +4,6 @@ DOCKER_BUILD_DIR=`cd $DIRNAME/; pwd`
 echo "DOCKER_BUILD_DIR=${DOCKER_BUILD_DIR}"
 cd ${DOCKER_BUILD_DIR}
 
-registry.baidubce.com/tools/databases-backup:v001
-
 BUILD_ARGS="--no-cache"
 VERSION="v002"
 PROJECT="tools"
