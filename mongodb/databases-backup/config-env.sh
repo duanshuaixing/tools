@@ -11,77 +11,73 @@
 
 yum_config(){
 
-cat >>/etc/yum.repos.d/ceph.repo<<EOF
-[Ceph]
-name=Ceph packages for x86_64
-baseurl=http://mirrors.aliyun.com/ceph/rpm-nautilus/el7/x86_64/
-gpgcheck=0
-priority=1
-
-[Ceph-noarch]
-name=Ceph noarch packages
-baseurl=http://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch
-gpgcheck=0
-priority=1
-
-[ceph-source]
-name=Ceph source packages
-baseurl=http://mirrors.aliyun.com/ceph/rpm-nautilus/el7/SRPMS
-gpgcheck=0
-priority=1
-EOF
-
-
     yum makecache
     yum -y install epel-release
     yum -y update
     yum -y install wget lrzsz openssl crontabs jq s3fs-fuse
-
+    
 }
 
 install_sf(){
 
-    #install aws-cli
-    curl -LO https://bootstrap.pypa.io/pip/2.7/get-pip.py
-    python get-pip.py
-    pip install --user awscli boto3
-    rm -rf get-pip.py
-    export PATH=~/.local/bin:$PATH
+    storage_cli(){
 
-    #install rbd client
-    yum -y install ceph-common fio smartmontools s3cmd
+        #install aws-cli
+        curl -LO https://bootstrap.pypa.io/pip/2.7/get-pip.py
+        python get-pip.py
+        pip install --user awscli boto3
+        rm -rf get-pip.py
+        #export PATH=~/.local/bin:$PATH
 
-    # install mongodump client
-    yum -y install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-org-server-5.0.1-1.el7.x86_64.rpm
-    yum -y install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-org-mongos-5.0.1-1.el7.x86_64.rpm
-    yum -y install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-database-tools-100.5.0.x86_64.rpm
-    yum -y install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-org-shell-5.0.1-1.el7.x86_64.rpm
+        #install rbd client
+        yum -y install ceph-common fio smartmontools s3cmd
+    }
 
-    #install registry.baidubce.com/tools/mongo-shake-v2.6.4_2:latest
-    wget https://github.com/alibaba/MongoShake/releases/download/release-v2.6.4-20210414/mongo-shake-v2.6.4_2.tar.gz -P /opt/
-    tar -xf /opt/mongo-shake-v2.6.4_2.tar.gz -C /opt/
-    rm -rf /opt/mongo-shake-v2.6.4_2.tar.gz
+    databases_cli(){
 
-    # install ysbc https://github.com/brianfrankcooper/YCSB/
-    yum -y install java-devel
-    wget https://github.com/brianfrankcooper/YCSB/releases/download/0.17.0/ycsb-mongodb-binding-0.17.0.tar.gz
-    tar -xf ycsb-mongodb-binding-0.17.0.tar.gz -C /opt/
-    rm -rf ycsb-mongodb-binding-0.17.0.tar.gz
+        # install mongodump client
+        yum -y install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-org-server-5.0.1-1.el7.x86_64.rpm
+        yum -y install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-org-mongos-5.0.1-1.el7.x86_64.rpm
+        yum -y install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-database-tools-100.5.0.x86_64.rpm
+        yum -y install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-org-shell-5.0.1-1.el7.x86_64.rpm
 
-    # install etcdctl client
-    curl -LO https://github.com/coreos/etcd/releases/download/v3.4.13/etcd-v3.4.13-linux-amd64.tar.gz
-    tar -xf etcd-v3.4.13-linux-amd64.tar.gz
-    mv etcd-v3.4.13-linux-amd64/etcdctl /usr/local/bin/
-    rm -rf etcd-v3.4.13*
+        #install mongo-shake-v2.6.4_2
+        wget https://github.com/alibaba/MongoShake/releases/download/release-v2.6.4-20210414/mongo-shake-v2.6.4_2.tar.gz -P /opt/
+        tar -xf /opt/mongo-shake-v2.6.4_2.tar.gz -C /opt/
+        rm -rf /opt/mongo-shake-v2.6.4_2.tar.gz
 
-    # install mysqldump client
-    yum -y install holland-mysqldump.noarch
+        # install ysbc https://github.com/brianfrankcooper/YCSB/
 
-    #install pg_dump
-    yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-    yum -y install postgresql96
+        # java
+        yum -y install java-devel
+
+        # maven
+        wget https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /opt/
+        tar -xf /opt/apache-maven-3.6.3-bin.tar.gz -C /opt/
+        rm -rf /opt/apache-maven-3.6.3-bin.tar.gz
+
+        #ycsb
+        wget https://github.com/brianfrankcooper/YCSB/releases/download/0.17.0/ycsb-mongodb-binding-0.17.0.tar.gz -P /opt/
+        tar -xf /opt/ycsb-mongodb-binding-0.17.0.tar.gz -C /opt/
+        rm -rf /opt/ycsb-mongodb-binding-0.17.0.tar.gz
+
+        # install etcdctl client
+        curl -LO https://github.com/coreos/etcd/releases/download/v3.4.13/etcd-v3.4.13-linux-amd64.tar.gz
+        tar -xf etcd-v3.4.13-linux-amd64.tar.gz
+        mv etcd-v3.4.13-linux-amd64/etcdctl /usr/local/bin/
+        rm -rf etcd-v3.4.13*
+
+        # install mysqldump client
+        yum -y install holland-mysqldump.noarch
+
+        #install pg_dump
+        yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+        yum -y install postgresql96
  
-    
+    }
+
+    storage_cli
+    databases_cli
 }
 
 clean_env(){
