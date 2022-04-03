@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-https
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tls-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "tls-test.chandz.com"
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        path:
+        backend:
+          service:
+            name: nginx-https
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - tls-test.chandz.com
+    secretName: chandz-com-tls
