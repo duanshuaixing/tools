@@ -12,10 +12,10 @@
 yum_config(){
 
     yum makecache
-    yum -y install epel-release
-    yum -y update
-    yum -y install tmux wget lrzsz openssl crontabs jq s3fs-fuse
-    yum -y install tcpdump tcping figlet nmap bind-utils mtr traceroute hping3 fping stress iperf iftop htop nethogs
+    yum -y --nogpgcheck install epel-release
+    yum -y --nogpgcheck update
+    yum -y --nogpgcheck install tmux wget lrzsz openssl crontabs jq s3fs-fuse
+    yum -y --nogpgcheck install tcpdump tcping figlet nmap bind-utils mtr traceroute hping3 fping stress iperf iftop htop nethogs
     
 }
 
@@ -31,16 +31,16 @@ install_sf(){
         #export PATH=~/.local/bin:$PATH
 
         #install rbd client
-        yum -y install ceph-common fio smartmontools s3cmd
+        yum -y --nogpgcheck install ceph-common fio smartmontools s3cmd
     }
 
     databases_cli(){
 
         # install mongodump client
-        yum -y install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-org-server-5.0.1-1.el7.x86_64.rpm
-        yum -y install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-org-mongos-5.0.1-1.el7.x86_64.rpm
-        yum -y install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-database-tools-100.5.0.x86_64.rpm
-        yum -y install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-org-shell-5.0.1-1.el7.x86_64.rpm
+        yum -y --nogpgcheck install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-org-server-5.0.1-1.el7.x86_64.rpm
+        yum -y --nogpgcheck install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-org-mongos-5.0.1-1.el7.x86_64.rpm
+        yum -y --nogpgcheck install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-database-tools-100.5.0.x86_64.rpm
+        yum -y --nogpgcheck install https://repo.mongodb.org/yum/redhat/7/mongodb-org/5.0/x86_64/RPMS/mongodb-org-shell-5.0.1-1.el7.x86_64.rpm
 
         #install mongo-shake-v2.6.4_2
         wget https://github.com/alibaba/MongoShake/releases/download/release-v2.6.4-20210414/mongo-shake-v2.6.4_2.tar.gz -P /opt/
@@ -50,7 +50,7 @@ install_sf(){
         # install ysbc https://github.com/brianfrankcooper/YCSB/
 
         # java
-        yum -y install java-devel
+        yum -y --nogpgcheck install java-devel
 
         # maven
         wget https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /opt/
@@ -69,11 +69,11 @@ install_sf(){
         rm -rf etcd-v3.4.13*
 
         # install mysqldump client
-        yum -y install holland-mysqldump.noarch
+        yum -y --nogpgcheck install holland-mysqldump.noarch
 
         #install pg_dump
-        yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-        yum -y install postgresql96
+        yum -y --nogpgcheck install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+        yum -y --nogpgcheck install postgresql
  
     }
 
