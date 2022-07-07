@@ -15,6 +15,7 @@ yum_config(){
     yum -y install epel-release
     yum -y update
     yum -y install wget lrzsz openssl crontabs jq s3fs-fuse
+    yum -y install tcpdump tcping figlet nmap bind-utils mtr traceroute hping3 fping stress iperf iftop htop nethogs
     
 }
 
