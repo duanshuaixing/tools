@@ -14,7 +14,7 @@ yum_config(){
     yum makecache
     yum -y install epel-release
     yum -y update
-    yum -y install wget lrzsz openssl crontabs jq s3fs-fuse
+    yum -y install tmux wget lrzsz openssl crontabs jq s3fs-fuse
     yum -y install tcpdump tcping figlet nmap bind-utils mtr traceroute hping3 fping stress iperf iftop htop nethogs
     
 }

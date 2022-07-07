@@ -14,7 +14,7 @@
 数据库方面: mongo、mongo-shake、mysql、pgsql、etcdctl等备份工具
 数据库压测: ycsb(mongodb压测工具)
 存储方面: aws-cli、s3cmd、rbd、s3fs等存储客户端命令
-Debug工具：tcpdump tcping figlet nmap bind-utils mtr traceroute hping3 fping stress iperf iftop htop nethogs
+Debug工具：tmux tcpdump tcping figlet nmap bind-utils mtr traceroute hping3 fping stress iperf iftop htop nethogs
 
 
 基于databases-backup:v002镜像实现的功能:
