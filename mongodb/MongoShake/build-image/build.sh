@@ -7,7 +7,7 @@ cd ${DOCKER_BUILD_DIR}
 BUILD_ARGS="--no-cache"
 VERSION="0.0.1"
 PROJECT="tools"
-IMAGE="mongo-shake-v2.6.4_2"
+IMAGE="mongo-shake-v2.8.2"
 DOCKER_REPOSITORY="registry.baidubce.com"
 IMAGE_NAME="${DOCKER_REPOSITORY}/${PROJECT}/${IMAGE}"
 TIMESTAMP=$(date +"%Y%m%dT%H%M%S")
@@ -41,4 +41,4 @@ function push_image {
 }
 
 build_image
-push_image
+#push_image
