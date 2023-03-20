@@ -19,6 +19,16 @@ yum_config(){
     
 }
 
+config_crontab(){
+
+    echo "* * * * * date >/root/crontab-date" >/etc/cron.d/crontab-list
+    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+    sed -i 's/required/sufficient/g' /etc/pam.d/crond
+    chmod 0644 /etc/cron.d/crontab-list
+    crontab /etc/cron.d/crontab-list
+    
+}
+
 install_sf(){
 
     storage_cli(){

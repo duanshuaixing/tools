@@ -9,4 +9,4 @@ ADD ./config-env.sh /opt/
 ADD ./READEME /opt/
 RUN /opt/config-env.sh
 WORKDIR /opt/
-ENTRYPOINT ["tail","-f","/dev/null"]
+CMD ["sh","/opt/entrypoint.sh"]

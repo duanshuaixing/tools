@@ -5,7 +5,7 @@ echo "DOCKER_BUILD_DIR=${DOCKER_BUILD_DIR}"
 cd ${DOCKER_BUILD_DIR}
 
 BUILD_ARGS="--no-cache"
-VERSION="v002"
+VERSION="v003"
 PROJECT="tools"
 IMAGE="databases-backup"
 DOCKER_REPOSITORY="registry.baidubce.com"

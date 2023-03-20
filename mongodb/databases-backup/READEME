@@ -8,7 +8,7 @@
  * *******************************************************
 !
 
-镜像地址: registry.baidubce.com/tools/databases-backup:v002
+镜像地址: registry.baidubce.com/tools/databases-backup:v003
 
 支持工具列表:
 数据库方面: mongo、mongo-shake、mysql、pgsql、etcdctl等备份工具
@@ -20,3 +20,6 @@ Debug工具：tmux tcpdump tcping figlet nmap bind-utils mtr traceroute hping3 f
 基于databases-backup:v002镜像实现的功能:
 
 1、文件:mongodb-check-status.yaml 检查mongodb集群是否卡主，将来会支持更多指标检测
+
+基于databases-backup:v003镜像实现的功能:
+调整cronjob配置，支持容器内执行cronjob, cronjob文件配置地址：/etc/cron.d/crontab-list
