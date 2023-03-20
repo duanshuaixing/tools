@@ -87,6 +87,7 @@ install_sf(){
  
     }
 
+    config_crontab
     storage_cli
     databases_cli
 }
