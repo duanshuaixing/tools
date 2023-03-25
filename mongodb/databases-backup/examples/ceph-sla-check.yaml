@@ -1,0 +1,274 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rbd-check-sla-configmap
+data:
+  crontab-list: |
+    * * * * * bash /tmp/check-sla.sh
+  check-sla.sh: |
+    Check_time=`date +%Y/%m/%d-%T`
+    HTTP_PROXY_ENABLED=false
+    HTTP_PROXY=proxy.chandz.com:3128
+    #钉钉接受消息地址，关键词集群
+    DINGTALK_TOKEN=https://oapi.dingtalk.com/robot/send?access_token=xxxx
+    
+    >/opt/sla/metrics
+    >/opt/sla/metrics2
+    send_message(){
+    
+         if [ "$HTTP_PROXY_ENABLED" = true ];then
+             curl --proxy $HTTP_PROXY "$DINGTALK_TOKEN" -H 'Content-Type: application/json' -d "{\"actionCard\": {\"text\": \"$context\",},\"msgtype\": \"actionCard\"}"
+         else
+             curl "$DINGTALK_TOKEN" -H 'Content-Type: application/json' -d "{\"actionCard\": {\"text\": \"$context\",},\"msgtype\": \"actionCard\"}"
+        fi
+    }
+    
+    check_sla(){
+    
+        df -Th|grep $SLA_Path|grep rbd
+    
+        if [ $? -eq 0 ];then
+    
+           context="集群挂载正常:$Cluster_name\n\n检测时间: $Check_time"
+           echo "########################################################################"
+           echo $context
+           echo "########################################################################"
+    
+           timeout -k 5s 50s dd if=/dev/zero of=$SLA_Path/sla-file bs=1M count=100
+    
+           if [ $? -eq 0 ];then
+              context="集群读写正常:$Cluster_name\n\n检测时间: $Check_time"
+              echo "########################################################################"
+              echo $context
+              echo "########################################################################"
+              rm -rf $SLA_Path/sla-file
+           else
+               context="[关键通知]\n\nRBD集群SLA掉落: $Cluster_name\n\n集群地址: \n\n$Cluster_members\n\n原因: SLA检测服务读写RBD异常\n\n检测时间: $Check_time"
+               echo "########################################################################"
+               echo $context
+               echo "########################################################################"
+               send_message
+           fi
+    
+        else
+           context="[关键通知]\n\nRBD集群SLA掉落: $Cluster_name\n\n集群地址: \n\n$Cluster_members\n\n原因: SLA检测服务挂载RBD异常\n\n检测时间: $Check_time"
+           echo "########################################################################"
+           echo $context
+           echo "########################################################################"
+           send_message
+        fi
+    
+    }
+
+    metrics-output(){
+
+       if [ $? -eq 0 ];then
+          echo $Cluster_name = 1 >>/opt/sla/metrics2
+       else
+          echo $Cluster_name = 0 >>/opt/sla/metrics2
+       fi
+
+    }
+    prometheus_client(){
+        while read -r line; do
+          key=${line%=*} # remove everything after "=" to get the key
+          value=${line##*=} # remove everything before "=" to get the value
+          echo "SLA_RBD_AVAILABLE{key=\"$key\"} $value" >>/opt/sla/metrics
+        done < /opt/sla/metrics2
+    }
+
+    
+    cluster-01-check(){
+    
+       Cluster_name=cluster01
+       Cluster_members=192.168.86.24
+       SLA_Path=/data/cluster1-rbd-image
+       check_sla
+       metrics-output
+    
+    }
+    
+    cluster-02-check(){
+    
+       Cluster_name=cluster02
+       Cluster_members=192.168.86.25
+       SLA_Path=/data/cluster2-rbd-image
+       check_sla
+       metrics-output
+    
+    }
+    
+    cluster-03-check(){
+    
+       Cluster_name=cluster03
+       Cluster_members=192.168.86.26
+       SLA_Path=/data/cluster3-rbd-image
+       check_sla
+       metrics-output
+    
+    
+    }
+    
+    main(){
+        cluster-01-check
+        cluster-02-check
+        cluster-03-check
+        prometheus_client
+    }
+    
+    main
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cluster1-rbd-sla-secret
+type: "kubernetes.io/rbd"
+stringData:
+  key: AQAQnx5kN6uGNhAAk8D+yyzM+UjtqnN1ysTdSg==
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cluster2-rbd-sla-secret
+type: "kubernetes.io/rbd"
+stringData:
+  key: AQDxnh5kzGzJKBAA0NhlEPOkg8uRSIJakDTEbQ==
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cluster3-rbd-sla-secret
+type: "kubernetes.io/rbd"
+stringData:
+  key: AQDfnh5kGj+UBBAA/dP4RoWSNz7pd/VCwGUOwg==
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    team: monitor
+  name: rbd-sla-01
+spec:
+  endpoints:
+  - interval: 15s
+    port: rbd-sla-01
+    path: /sla/metrics
+  jobLabel: rbd-sla-01
+  selector:
+    matchLabels:
+      app: rbd-sla-01
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: rbd-sla-01
+  name: rbd-sla-01
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+    name: rbd-sla-01
+  selector:
+    app: rbd-sla-01
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: rbd-sla-01
+  name: rbd-sla-01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rbd-sla-01
+  template:
+    metadata:
+      labels:
+        app: rbd-sla-01
+    spec:
+      containers:
+      - image: registry.baidubce.com/tools/databases-backup:v003
+        name: metrics
+        imagePullPolicy: IfNotPresent
+        command: ["python"]
+        args: ["-m", "SimpleHTTPServer", "80", "/opt/sla/"]
+        resources:
+          limits:
+            cpu: 1
+            memory: 512Mi
+          requests:
+            cpu: 0.5
+            memory: 256Mi
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: sla-log
+          mountPath: /opt/sla
+      - image: registry.baidubce.com/tools/databases-backup:v003
+        name: server
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 1
+            memory: 2Gi
+          requests:
+            cpu: 0.5
+            memory: 256Mi
+        volumeMounts:
+        - name: sla-log
+          mountPath: /opt/sla
+        - name: scripts
+          mountPath: /etc/cron.d/crontab-list
+          subPath: crontab-list
+        - name: scripts
+          mountPath: /tmp/check-sla.sh
+          subPath: check-sla.sh
+        - name: cluster1-rbd-volume
+          mountPath: /data/cluster1-rbd-image
+        - name: cluster2-rbd-volume
+          mountPath: /data/cluster2-rbd-image
+        - name: cluster3-rbd-volume
+          mountPath: /data/cluster3-rbd-image
+      volumes:
+      - name: sla-log
+        emptyDir:
+          sizeLimit: 5Mi
+      - name: scripts
+        configMap:
+          name: rbd-check-sla-configmap
+          defaultMode: 0777
+      - name: cluster1-rbd-volume
+        rbd:
+          monitors:
+          - 192.168.86.24:6789
+          pool: rbd
+          image: cluster1-rbd-image
+          fsType: xfs
+          user: admin
+          secretRef:
+            name: cluster1-rbd-sla-secret
+      - name: cluster2-rbd-volume
+        rbd:
+          monitors:
+          - 192.168.86.25:6789
+          pool: rbd
+          image: cluster2-rbd-image
+          fsType: xfs
+          user: admin
+          secretRef:
+            name: cluster2-rbd-sla-secret
+      - name: cluster3-rbd-volume
+        rbd:
+          monitors:
+          - 192.168.86.26:6789
+          pool: rbd
+          image: cluster3-rbd-image
+          fsType: xfs
+          user: admin
+          secretRef:
+            name: cluster3-rbd-sla-secret
