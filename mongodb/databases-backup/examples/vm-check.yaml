@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vm-check-configmap
+data:
+  hosts.txt: |
+    www.chandz.com
+    180.76.76.76
+  crontab-list: |
+    * * * * * bash /tmp/vm-check.sh
+  vm-check.sh: |
+    #!/bin/bash 
+
+    touch /etc/default/locale
+    sh -c "echo 'LANG=en_US.UTF-8' >> /etc/default/locale"
+    sh -c "echo 'LC_ALL=en_US.UTF-8' >> /etc/default/locale"
+    . /etc/default/locale
+    dingding_alert(){
+    
+      #钉钉机器人关键词是"宕机"
+      #目前仅支持添加2个用户，如果需要添加多个可以重新修改vm-check.sh添加多个用户
+      #根据根据实际需要监控的域名或者IP填写，修改configmap需要重启pod生效
+      dingtalk_token="https://oapi.dingtalk.com/robot/send?access_token=钉钉群组添加自定义机器人获取token值"
+      user1=135xxxxxxxx
+      user2=138xxxxxxxx
+    
+      message="节点连接异常或宕机:$i，请尽快处理" 
+      curl "$dingtalk_token" -H 'Content-Type: application/json' -d '{"msgtype": "text","text": {"content": "'$message'"}, "at": {"atMobiles": ["'$user1'","'$user2'"], "isAtAll": false}}'
+    
+    }
+    
+    check_vm(){
+      
+      for i in `cat /tmp/hosts.txt` 
+      do 
+        tcping $i 22 -t 3
+          if [ $? -eq 0 ]
+           then
+             echo "tcping ${i} 22 -t 3 up"
+           else
+             echo "tcping ${i} 22 -t 3 down" 
+             dingding_alert
+          fi
+       done
+    }
+    
+    check_vm
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: vm-check
+  name: vm-check
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vm-check
+  template:
+    metadata:
+      labels:
+        app: vm-check
+    spec:
+      containers:
+      - image: registry.baidubce.com/tools/databases-backup:v003
+        imagePullPolicy: IfNotPresent
+        name: vm-check
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 50m
+            memory: 50Mi
+        volumeMounts:
+          - name: vm-check-volume
+            mountPath: /etc/cron.d/crontab-list
+            subPath: crontab-list
+          - name: vm-check-volume
+            mountPath: /tmp/vm-check.sh
+            subPath: vm-check.sh
+          - name: vm-check-volume
+            mountPath: /tmp/hosts.txt
+            subPath: hosts.txt
+      volumes:
+        - name: vm-check-volume
+          configMap:
+            name: vm-check-configmap
+            defaultMode: 0777
