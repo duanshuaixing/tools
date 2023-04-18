@@ -1,0 +1,96 @@
+colorscheme molokai
+ 
+"molokai设置
+set t_Co=256
+let g:molokai_original = 1 
+let g:rehash256 = 1 
+"代码颜色区分
+syntax enable
+syntax on
+ 
+"tab宽度和缩进设置
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+"兼容老版本
+set nocompatible
+set backspace=indent,eol,start
+ 
+"自动缩紧和对齐
+set autoindent
+set smartindent
+ 
+"开启追踪列表选择
+set cscopetag
+set hlsearch
+ 
+"默认显示行号
+set number
+ 
+"自动加载和保存折叠
+au BufWinLeave * silent mkview
+au BufWinEnter * silent loadview
+ 
+"括号和引号自动补全
+"inoremap ' ''<ESC>i
+"inoremap " ""<ESC>i
+"inoremap ( ()<ESC>i
+"inoremap [ []<ESC>i
+"inoremap { {}<ESC>i
+"GoLang代码提示
+imap <F2> <C-x><C-o>
+"开启NerdTree
+map <F3> :NERDTreeMirror<CR>
+map <F3> :NERDTreeToggle<CR>
+"autocmd VimEnter * NERDTree
+let NERDTreeWinSize=30
+"文件结构显示
+nmap <F4> :TagbarToggle<CR>
+"let g:tagbar_autopreview = 1 "开启自动预览(随着光标在标签上的移动，顶部会出现一个实时的预览窗口 
+let g:tagbar_sort = 0 "关闭排序,即按标签本身在文件中的位置排序
+let g:tagbar_left = 1 "默认在右边，设置在左边
+let g:tagbar_width = 30 "宽度
+let g:tagbar_type_go = { 
+    \ 'ctagstype' : 'go',
+    \ 'kinds'     : [ 
+        \ 'p:package',
+        \ 'i:imports:1',
+        \ 'c:constants',
+        \ 'v:variables',
+        \ 't:types',
+        \ 'n:interfaces',
+        \ 'w:fields',
+        \ 'e:embedded',
+        \ 'm:methods',
+        \ 'r:constructor',
+        \ 'f:functions'
+    \ ],
+    \ 'sro' : '.',
+    \ 'kind2scope' : { 
+        \ 't' : 'ctype',
+        \ 'n' : 'ntype'
+    \ },
+    \ 'scope2kind' : { 
+        \ 'ctype' : 't',
+        \ 'ntype' : 'n'
+    \ },
+    \ 'ctagsbin'  : 'gotags',
+    \ 'ctagsargs' : '-sort -silent'
+\ }
+"go函数追踪 ctrl+] 或 gd 追踪 ctrl+o返回
+autocmd FileType go nnoremap <buffer> gd :call GodefUnderCursor()<cr>
+autocmd FileType go nnoremap <buffer> <C-]> :call GodefUnderCursor()<cr>
+let g:godef_split=3    "追踪打开新tab
+let g:godef_same_file_in_same_window=1    "函数在同一个文件中时不需要打开新窗口
+"保存自动goimports
+let g:go_fmt_command = "goimports"
+let g:goimports = 1
+filetype off
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+Plugin 'gmarik/Vundle.vim'
+Plugin 'fatih/vim-go'
+Plugin 'scrooloose/nerdtree'
+Plugin 'majutsushi/tagbar'
+call vundle#end()
+filetype plugin indent on

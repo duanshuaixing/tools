@@ -1,0 +1,2 @@
+docker build -t registry.baidubce.com/tools/golang-vim:1.20.3 .
+docker run -itd --name=golang-vim -p8080:80 golang-vim:1.20.3

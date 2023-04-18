@@ -1,0 +1,15 @@
+export GOROOT=/usr/local/go
+export GOPATH=/opt/go-code
+export PATH=$PATH/bin:$GOROOT/bin:$GOPATH/bin
+ 
+alias gosrc="cd $GOROOT/src"
+alias gopath="cd $GOPATH"
+alias gomod="cd $GOMOD"
+ 
+alias gorm='gormt -g=true'
+alias gotest='gotests -all -w ./'
+alias goformat='gofmt -l -w -s ./'
+alias goimport='goimports -l -w ./'
+alias gorace='go run -race .'
+alias cover="go test -coverprofile=cover.out"
+alias covers="go tool cover -html=cover.out"
