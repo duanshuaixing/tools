@@ -7,6 +7,7 @@ install_sf(){
         apt-get update
         apt-get -y install git wget vim net-tools  bash-completion exuberant-ctags
         apt-get -y install htop iftop sysstat tree curl inetutils-ping iproute2 iperf iperf3 
+        apt-get -y install jq sync build-essential
         echo "source /etc/bash_completion" >>~/.bashrc
         cat /opt/goland-image/bash_profile >~/.bash_profile
     }
