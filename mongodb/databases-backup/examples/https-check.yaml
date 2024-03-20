@@ -18,9 +18,13 @@ data:
     . /etc/default/locale
     
     #发送钉钉消息,机器人关键词证书
-    send_message(){
+    send_message_dingtalk(){
         dingtalk_token="https://oapi.dingtalk.com/robot/send?access_token=钉钉群组添加自定义机器人获取token值"
         curl "$dingtalk_token" -H 'Content-Type: application/json' -d "{\"actionCard\": {\"text\": \"$context\",},\"msgtype\": \"actionCard\"}"
+    }
+    send_message_feishu(){
+	      feishu_token=https://open.feishu.cn/open-apis/bot/v2/hook/"飞书群组添加自定义机器人获取token值"
+        curl $feishu_token -X POST -H "Content-Type: application/json" -d "{\"msg_type\":\"text\", \"content\":{\"text\":\"$context\"}}"
     }
 
     https-check(){
@@ -30,13 +34,13 @@ data:
         else
             #计算SSL正式到期时间和当前时间的差值
             host=$1
-            end_data=`date +%s -d "$(echo |openssl s_client -servername $host  -connect $host 2>/dev/null | openssl x509 -noout -dates|awk -F '=' '/notAfter/{print $2}')"`
+            end_data=`date +%s -d "$(echo |timeout 30 openssl s_client -servername $host  -connect $host 2>/dev/null | openssl x509 -noout -dates|awk -F '=' '/notAfter/{print $2}')"`
             new_date=$(date +%s)
             days=$(expr $(expr $end_data - $new_date) / 86400)
            
            if [ $days -lt 300 ]; then
               context="您的$host 证书 还有${days}天到期  请及时处理"
-              send_message
+              send_message_dingtalk
            fi
         fi
     }
