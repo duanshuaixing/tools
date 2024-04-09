@@ -2,7 +2,7 @@
  **********************************************************
  * Author        : duanshuaixing
  * Email         : duanshuaixing@gmail.com
- * Last modified : 2021-10-30 12:08
+ * Last modified : 2024-04-09
  * Filename      : config-env.sh
  * Description   : databases backup client 
  * *******************************************************
@@ -15,7 +15,8 @@ yum_config(){
     yum -y --nogpgcheck install epel-release
     yum -y --nogpgcheck update
     yum -y --nogpgcheck install tmux wget lrzsz openssl crontabs jq s3fs-fuse
-    yum -y --nogpgcheck install tcpdump tcping figlet nmap bind-utils mtr traceroute hping3 fping stress iperf iftop htop nethogs
+    yum -y --nogpgcheck install tcpdump tcping figlet nmap bind-utils mtr traceroute hping3 fping iperf iftop htop nethogs
+    yum -y --nogpgcheck pdsh ansible ethtool zip unzip less git git-lfs nvme-cli vim lftp dos2unix bash-completion elinks sshuttle iperf iperf3  
     
 }
 
