@@ -16,7 +16,7 @@ yum_config(){
     yum -y --nogpgcheck update
     yum -y --nogpgcheck install tmux wget lrzsz openssl crontabs jq s3fs-fuse
     yum -y --nogpgcheck install tcpdump tcping figlet nmap bind-utils mtr traceroute hping3 fping iperf iftop htop nethogs
-    yum -y --nogpgcheck pdsh ansible ethtool zip unzip less git git-lfs nvme-cli vim lftp dos2unix bash-completion elinks sshuttle iperf iperf3  
+    yum -y --nogpgcheck install pdsh ansible ethtool zip unzip less git git-lfs nvme-cli vim lftp dos2unix bash-completion elinks sshuttle iperf iperf3  
     
 }
 
