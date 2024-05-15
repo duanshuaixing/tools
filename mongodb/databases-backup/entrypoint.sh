@@ -1,6 +1,6 @@
 #!/bin/sh
 set -x
-curl -I https://oapi.dingtalk.com >/dev/null  2>&1
+curl -I https://www.baidu.com >/dev/null  2>&1
 if [ $? -eq 0 ]; then
     echo "Dingtalk messages can be pushed"
     # 保存环境变量，开启crontab服务

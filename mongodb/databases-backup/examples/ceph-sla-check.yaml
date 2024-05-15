@@ -192,7 +192,7 @@ spec:
         app: rbd-sla-01
     spec:
       containers:
-      - image: registry.baidubce.com/tools/databases-backup:v003
+      - image: duanshuaixing02/databases-backup:v001
         name: metrics
         imagePullPolicy: IfNotPresent
         command: ["python"]
@@ -209,7 +209,7 @@ spec:
         volumeMounts:
         - name: sla-log
           mountPath: /opt/sla
-      - image: registry.baidubce.com/tools/databases-backup:v003
+      - image: duanshuaixing/databases-backup:v001
         name: server
         imagePullPolicy: IfNotPresent
         resources:

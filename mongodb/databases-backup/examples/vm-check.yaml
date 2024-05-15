@@ -63,7 +63,7 @@ spec:
         app: vm-check
     spec:
       containers:
-      - image: registry.baidubce.com/tools/databases-backup:v003
+      - image: duanshuaixing02/databases-backup:v001
         imagePullPolicy: IfNotPresent
         name: vm-check
         resources:

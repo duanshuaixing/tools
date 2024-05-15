@@ -5,11 +5,10 @@ echo "DOCKER_BUILD_DIR=${DOCKER_BUILD_DIR}"
 cd ${DOCKER_BUILD_DIR}
 
 BUILD_ARGS="--no-cache"
-VERSION="v003"
-PROJECT="tools"
+VERSION="v001"
 IMAGE="databases-backup"
-DOCKER_REPOSITORY="registry.baidubce.com"
-IMAGE_NAME="${DOCKER_REPOSITORY}/${PROJECT}/${IMAGE}"
+DOCKER_REPOSITORY="duanshuaixing02"
+IMAGE_NAME="${DOCKER_REPOSITORY}/${IMAGE}"
 TIMESTAMP=$(date +"%Y%m%dT%H%M%S")
 
 if [ $HTTP_PROXY ]; then
@@ -21,23 +20,12 @@ fi
 
 function build_image {
     echo "Start build docker image: ${IMAGE_NAME}"
-    docker build ${BUILD_ARGS} -t ${IMAGE_NAME}:latest .
-}
-
-function push_image_tag {
-    TAG_NAME=$1
-    echo "Start push ${TAG_NAME}"
-    docker tag ${IMAGE_NAME}:latest ${TAG_NAME}
-    docker push ${TAG_NAME}
+    docker build ${BUILD_ARGS} -t ${IMAGE_NAME}:${VERSION} .
 }
 
 function push_image {
-    echo "Start push ${IMAGE_NAME}:latest"
-    docker push ${IMAGE_NAME}:latest
-    
-    push_image_tag ${IMAGE_NAME}:${VERSION}-SNAPSHOT-latest
-    push_image_tag ${IMAGE_NAME}:${VERSION}-STAGING-latest
-    push_image_tag ${IMAGE_NAME}:${VERSION}-STAGING-${TIMESTAMP}
+    echo "Start push ${IMAGE_NAME}:${VERSION}"
+    docker push ${IMAGE_NAME}:${VERSION}
 }
 
 build_image

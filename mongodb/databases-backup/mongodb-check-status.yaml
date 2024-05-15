@@ -85,7 +85,7 @@ spec:
                 defaultMode: 0777
           containers:
             - name: check
-              image: registry.baidubce.com/tools/databases-backup:v002
+              image: duanshuaixing02/databases-backup:v001
               env:
                 - name: TZ
                   value: Asia/Shanghai
