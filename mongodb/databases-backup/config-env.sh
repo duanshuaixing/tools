@@ -43,6 +43,13 @@ install_sf(){
 
         #install rbd client
         yum -y --nogpgcheck install ceph-common fio smartmontools s3cmd
+
+	#install rclone
+	curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip
+        unzip rclone-current-linux-amd64.zip
+        cp rclone-*-amd64/rclone /usr/local/bin/
+	rm -rf rclone-*-amd64/
+	mkdir -p /root/.config/rclone/
     }
 
     databases_cli(){
