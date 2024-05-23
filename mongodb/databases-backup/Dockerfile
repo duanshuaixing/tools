@@ -9,5 +9,6 @@ ADD ./ceph.repo /etc/yum.repos.d/
 ADD ./config-env.sh /opt/
 ADD ./READEME /opt/
 RUN /opt/config-env.sh
+ADD ./config-examples/rclone.conf /root/.config/rclone/
 WORKDIR /opt/
 CMD ["sh","/opt/entrypoint.sh"]
