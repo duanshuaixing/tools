@@ -49,7 +49,12 @@ install_sf(){
         unzip rclone-current-linux-amd64.zip
         cp rclone-*-amd64/rclone /usr/local/bin/
 	rm -rf rclone-*-amd64/
+	rm -rf rclone*.zip
 	mkdir -p /root/.config/rclone/
+
+	#install tosutil
+	curl -LO https://tos-tools.tos-cn-beijing.volces.com/linux/amd64/tosutil
+	chmoad a+x tosutil
     }
 
     databases_cli(){
