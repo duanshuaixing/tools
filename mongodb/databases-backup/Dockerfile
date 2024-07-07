@@ -5,7 +5,8 @@ ENV PATH=~/.local/bin:$PATH
 ENV PATH=/opt/apache-maven-3.6.3/bin:$PATH
 ADD ./Dockerfile /opt/
 ADD ./entrypoint.sh /opt/
-ADD ./ceph.repo /etc/yum.repos.d/
+ADD ./config/ceph.repo /etc/yum.repos.d/
+ADD ./config/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo
 ADD ./config-env.sh /opt/
 ADD ./READEME /opt/
 RUN /opt/config-env.sh
