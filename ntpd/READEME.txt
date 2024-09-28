@@ -1,0 +1,69 @@
+# Docker NTP Server README
+## Overview
+This repository contains a Docker image for running an NTP (Network Time Protocol) server based on Ubuntu 22.04. The server is configured to synchronize time with multiple NTP servers from Alibaba Cloud and is set to the Asia/Shanghai timezone by default.
+
+## Features
+- Pre-configured NTP server using ntpd.
+- Timezone set to Asia/Shanghai.
+- NTP server configuration allows for time synchronization while preventing unauthorized modifications.
+- Exposes port 123 for NTP traffic.
+
+## Usage
+To run the NTP server, execute the following command:
+```bash
+docker run -itd --privileged --name ntpd -p 123:123/udp duanshuaixing02/ntpd:latest
+```
+This command will:
+- Run a Docker container in interactive mode (-itd).
+- Grant extended privileges to the container (--privileged), which is necessary for ntpd to function correctly.
+- Name the container ntpd.
+- Map port 123 of the host to port 123 of the container (-p 123:123/udp), enabling NTP traffic.
+
+## Dockerfile
+Below is the Dockerfile used to create the image:
+```dockerfile
+FROM ubuntu:22.04
+LABEL maintainer="duanshuaixing@gmail.com"
+ENV TZ=Asia/Shanghai
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update \
+    && apt-get -y install ntp ntpdate tzdata \
+    && ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo Asia/Shanghai > /etc/timezone \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /var/lib/ntp
+COPY ntp.conf    /etc/ntp.conf
+COPY ntp.conf    /opt/ntp.conf
+COPY Dockerfile  /opt/Dockerfile
+COPY READEME.txt /opt/READEME.txt
+WORKDIR /opt/
+EXPOSE 123
+CMD ["ntpd","-g","-n","-x"]
+```
+## NTP Configuration
+The ntp.conf file included in the image is as follows:
+```bash
+driftfile /var/lib/ntp/ntp.drift
+
+restrict default nomodify notrap
+
+server ntp1.aliyun.com  prefer
+server ntp2.aliyun.com  iburst
+server ntp3.aliyun.com  iburst
+server ntp4.aliyun.com  iburst
+server ntp5.aliyun.com  iburst
+server ntp6.aliyun.com  iburst
+server ntp7.aliyun.com  iburst
+```
+This configuration sets up the NTP server with the following parameters:
+
+- driftfile: Specifies the file where the frequency offset of the local clock is kept.
+- restrict default nomodify notrap: Restricts default access to the NTP server, allowing clients to synchronize but not modify the server configuration.
+- server: Lists the NTP servers to use for time synchronization, with prefer indicating the primary server and iburst enabling rapid initial synchronization.
+
+## Support
+For support or questions, please contact the maintainer at duanshuaixing@gmail.com.
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details

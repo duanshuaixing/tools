@@ -1,0 +1,82 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ntpd-conf
+data:
+  ntp.conf: |
+    driftfile /var/lib/ntp/ntp.drift
+    restrict default nomodify notrap
+    server ntp1.aliyun.com  prefer
+    server ntp2.aliyun.com  iburst
+    server ntp3.aliyun.com  iburst
+    server ntp4.aliyun.com  iburst
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ntpd
+spec:
+  selector:
+    app: ntpd
+  ports:
+  - name: ntp-udp
+    port: 123
+    protocol: UDP
+    targetPort: 123
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ntpd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ntpd
+  template:
+    metadata:
+      labels:
+        app: ntpd
+    spec:
+      containers:
+      - name: ntpd
+        image: duanshuaixing02/ntpd:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 123
+          protocol: UDP
+        livenessProbe:
+          exec:
+            command:
+            - ntpq
+            - -p
+          initialDelaySeconds: 30
+          periodSeconds: 60
+        readinessProbe:
+          exec:
+            command:
+            - ntpq
+            - -p
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: ntp-conf
+          mountPath: /etc/ntp.conf
+          subPath: ntp.conf
+      volumes:
+      - name: ntp-conf
+        configMap:
+          name: ntpd-conf
+          items:
+          - key: ntp.conf
+            path: ntp.conf
+---
