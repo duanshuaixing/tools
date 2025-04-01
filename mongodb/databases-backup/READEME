@@ -8,7 +8,7 @@
  * *******************************************************
 !
 
-镜像地址: duanshuaixing02/databases-backup:v001
+镜像地址: duanshuaixing02/databases-backup:v002
 
 支持工具列表:
 数据库方面: mongo、mongo-shake、mysql、pgsql、etcdctl等备份工具

@@ -55,6 +55,9 @@ install_sf(){
 	#install tosutil
 	curl -LO https://tos-tools.tos-cn-beijing.volces.com/linux/amd64/tosutil
 	chmoad a+x tosutil
+
+	# install ossutil
+	curl -o ossutil  -L http://gosspublic.alicdn.com/ossutil/1.7.1/ossutil64
     }
 
     databases_cli(){
