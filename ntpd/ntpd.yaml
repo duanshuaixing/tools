@@ -7,10 +7,21 @@ data:
   ntp.conf: |
     driftfile /var/lib/ntp/ntp.drift
     restrict default nomodify notrap
-    server ntp1.aliyun.com  prefer
-    server ntp2.aliyun.com  iburst
-    server ntp3.aliyun.com  iburst
-    server ntp4.aliyun.com  iburst
+    #upstream
+    server cn.pool.ntp.org  prefer
+    server 1.cn.pool.ntp.org iburst
+    server 2.cn.pool.ntp.org iburst
+    server cn.ntp.org.cn iburst
+
+    # performance
+    tinker panic 0
+    tos maxclock 8
+    tos minclock 3
+
+    #client-config /etc/ntp.conf
+    #driftfile /var/lib/ntp/ntp.drift
+    #leapfile /usr/share/zoneinfo/leap-seconds.list
+    #server net-server-ip prefer
 ---
 apiVersion: v1
 kind: Service
@@ -25,6 +36,7 @@ spec:
     protocol: UDP
     targetPort: 123
   type: LoadBalancer
+  externalTrafficPolicy: Local
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -44,6 +56,13 @@ spec:
       - name: ntpd
         image: duanshuaixing02/ntpd:latest
         imagePullPolicy: IfNotPresent
+        securityContext:
+          capabilities:
+            add:
+            - SYS_TIME
+            - SYS_NICE
+          privileged: false
+          readOnlyRootFilesystem: true
         ports:
         - containerPort: 123
           protocol: UDP
