@@ -15,6 +15,7 @@ COPY entrypoint.sh /opt/entrypoint.sh
 COPY Dockerfile  /opt/Dockerfile
 COPY ntpd.yaml   /opt/ntpd.yaml
 COPY READEME.txt /opt/READEME.txt
+RUN chmod a+x /opt/entrypoint.sh
 WORKDIR /opt/
 EXPOSE 123
-ENTRYPOINT ["/usr/bin/bash /opt/entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
