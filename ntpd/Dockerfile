@@ -11,9 +11,10 @@ RUN apt-get update \
     && mkdir -p /var/lib/ntp
 COPY ntp.conf    /etc/ntp.conf
 COPY ntp.conf    /opt/ntp.conf
+COPY entrypoint.sh /opt/entrypoint.sh
 COPY Dockerfile  /opt/Dockerfile
 COPY ntpd.yaml   /opt/ntpd.yaml
 COPY READEME.txt /opt/READEME.txt
 WORKDIR /opt/
 EXPOSE 123
-CMD ["ntpd","-g","-n","-x"]
+ENTRYPOINT ["/usr/bin/bash /opt/entrypoint.sh"]
